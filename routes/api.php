@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Payments\Mpesa\MpesaController;
 use App\Http\Controllers\Payments\Mpesa\MpesaResponsesController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -19,3 +18,6 @@ use Illuminate\Support\Facades\Route;
 Route::post('validation', [MpesaResponsesController::class, 'validation']);
 Route::post('confirmation', [MpesaResponsesController::class, 'confirmation']);
 Route::post('stkpush', [MpesaResponsesController::class, 'stkPush']);
+Route::post('b2ccallback', [MpesaResponsesController::class, 'b2cCallback']);
+Route::post('transaction-status/result_url', [MpesaResponsesController::class, 'transactionStatusResponse']);
+Route::post('reversal/result_url', [MpesaResponsesController::class, 'transactionReversal']);

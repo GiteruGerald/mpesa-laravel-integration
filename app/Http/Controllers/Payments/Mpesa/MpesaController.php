@@ -73,6 +73,30 @@ class MpesaController extends Controller
     }
 
     /*
+    *B2C
+    */
+
+    public function b2cRequest(Request $request)
+    {
+        $curl_post_data = array(
+            'InitiatorName' => env('MPESA_B2C_INITIATOR'),
+            'SecurityCredential' => env('MPESA_B2C_PASSWORD'),
+            'CommandID' => 'SalaryPayment',
+            'Amount' => $request->amount,
+            'PartyA' => env('MPESA_SHORTCODE'),
+            'PartyB' => $request->phone,
+            'Remarks' => $request->remarks,
+            'QueueTimeOutURL' => env('MPESA_TEST_URL') . '/api/b2ctimeout',
+            'ResultURL' => env('MPESA_TEST_URL') . '/api/b2ccallback',
+            'Occasion' => $request->occasion
+        );
+
+        $res = $this->makeHttp('/b2c/v1/paymentrequest', $curl_post_data);
+
+        return $res;
+    }
+
+    /*
     * Stk Push
     */
 
@@ -103,6 +127,53 @@ class MpesaController extends Controller
         $response = $this->makeHttp($url, $curl_post_data);
 
         return $response;
+    }
+
+
+    /**
+     * Transaction status API
+     */
+    public function transactionStatus(Request $request)
+    {
+        $body =  array(
+            'Initiator' => env('MPESA_B2C_INITIATOR'),
+            'SecurityCredential' => env('MPESA_B2C_PASSWORD'),
+            'CommandID' => 'TransactionStatusQuery',
+            'TransactionID' => $request->transactionid,
+            'PartyA' => env('MPESA_SHORTCODE'),
+            'IdentifierType' => '4',
+            'ResultURL' => env('MPESA_TEST_URL') . '/api/transaction-status/result_url',
+            'QueueTimeOutURL' => env('MPESA_TEST_URL') . '/api/transaction-status/timeout_url',
+            'Remarks' => 'CheckTransaction',
+            'Occasion' => 'VerifyTransaction'
+        );
+
+        $url =  'transactionstatus/v1/query';
+        $response = $this->makeHttp($url, $body);
+
+        return $response;
+    }
+
+
+    public function reverseTransaction(Request $request){
+        $body = array(
+            'Initiator' => env('MPESA_B2C_INITIATOR'),
+            'SecurityCredential' => env('MPESA_B2C_PASSWORD'),
+            'CommandID' => 'TransactionReversal',
+            'TransactionID' => $request->transactionid,
+            'Amount' => $request->amount,
+            'ReceiverParty' => env('MPESA_SHORTCODE'),
+            'RecieverIdentifierType' => '11',
+            'ResultURL' => env('MPESA_TEST_URL') . '/api/reversal/result_url',
+            'QueueTimeOutURL' => env('MPESA_TEST_URL') . '/api/reversal/timeout_url',
+            'Remarks' => 'ReversalRequest',
+            'Occasion' => 'ErroneousPayment'
+          );
+
+          $url =  'reversal/v1/request';
+          $response = $this->makeHttp($url, $body);
+  
+          return $response;
     }
 
     public function makeHttp($url, $body)

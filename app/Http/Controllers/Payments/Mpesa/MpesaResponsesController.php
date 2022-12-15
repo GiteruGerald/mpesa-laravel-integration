@@ -43,4 +43,36 @@ class MpesaResponsesController extends Controller
             'ThirdPartyTransID' => rand(3000, 10000)
         ];
     }
+   
+    public function b2cCallback(Request $request)
+    {
+        Log::info('B2C endpoint hit');
+        Log::info($request->all());
+        return [
+            'ResultCode' => 0,
+            'ResultDesc' => 'Accept Service',
+            'ThirdPartyTransID' => rand(3000, 10000)
+        ];
+    }
+    public function transactionStatusResponse(Request $request)
+    {
+        Log::info('transactionStatusResponse endpoint hit');
+        Log::info($request->all());
+        return [
+            'ResultCode' => 0,
+            'ResultDesc' => 'Accept Service',
+            'ThirdPartyTransID' => rand(3000, 10000)
+        ];
+    }
+    
+    public function transactionReversal(Request $request)
+    {
+        Log::info('transactionReversal endpoint hit');
+        Log::info($request->all());
+        return [
+            'ResultCode' => 0,
+            'ResultDesc' => 'Accept Service',
+            'ThirdPartyTransID' => rand(3000, 10000)
+        ];
+    }
 }
