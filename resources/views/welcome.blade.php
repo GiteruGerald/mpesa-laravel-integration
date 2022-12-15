@@ -62,7 +62,7 @@
             axios.post('/get-token', {})
                 .then((response) => {
                     console.log(response.data)
-                    document.getElementById('access_token').innerHTML = response.data.access_token
+                    document.getElementById('access_token').innerHTML = response.data
                 })
                 .catch((error) => {
                     console.log(error)
@@ -93,7 +93,7 @@
 
             const requestBody = {
                 amount: document.getElementById('amount').value,
-                account: document.getElementById('amount').value,
+                account: document.getElementById('account').value,
             }
 
             axios.post('simulate', requestBody)

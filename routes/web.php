@@ -21,3 +21,7 @@ Route::get('/', function () {
 Route::post('get-token', [MpesaController::class,'getAccessToken']);
 Route::post('register-urls', [MpesaController::class,'registerURLS']);
 Route::post('simulate', [MpesaController::class,'simulateTransaction']);
+Route::post('stkpush', [MpesaController::class,'stkPush']);
+Route::get('stk', function(){
+    return view('stk');
+});

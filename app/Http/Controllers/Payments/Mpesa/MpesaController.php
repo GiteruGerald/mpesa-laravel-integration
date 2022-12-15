@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Payments\Mpesa;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use App\Http\Controllers\Controller;
 
 class MpesaController extends Controller
 {
@@ -31,7 +32,7 @@ class MpesaController extends Controller
         return $response->access_token;
     }
 
-    
+
     /**
      * Register URL 
      */
@@ -51,7 +52,7 @@ class MpesaController extends Controller
     }
 
 
-    
+
     /**
      * Simulate Transaction
      */
@@ -71,6 +72,38 @@ class MpesaController extends Controller
         return $response;
     }
 
+    /*
+    * Stk Push
+    */
+
+    public function stkPush(Request $request)
+    {
+        $timestamp = date('YmdHis');
+        // $timestamp = Carbon::rawParse('now')->format('YmdHms');
+
+        $password = base64_encode(env('MPESA_STK_SHORTCODE') . env('MPESA_PASSKEY') . $timestamp);
+        // $password = 'MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMTYwMjE2MTY1NjI3'; From the Daraja API docs
+
+        $curl_post_data = array(
+            'BusinessShortCode' => env('MPESA_STK_SHORTCODE'),
+            'Password' => $password,
+            'Timestamp' => $timestamp,
+            'TransactionType' => 'CustomerPayBillOnline',
+            'Amount' => $request->amount,
+            'PartyA' => $request->phone,
+            'PartyB' => env('MPESA_STK_SHORTCODE'),
+            'PhoneNumber' => $request->phone,
+            'CallBackURL' => env('MPESA_TEST_URL') . '/api/stkpush',
+            'AccountReference' => $request->account,
+            'TransactionDesc' => $request->account
+        );
+
+        $url = '/stkpush/v1/processrequest';
+
+        $response = $this->makeHttp($url, $curl_post_data);
+
+        return $response;
+    }
 
     public function makeHttp($url, $body)
     {
